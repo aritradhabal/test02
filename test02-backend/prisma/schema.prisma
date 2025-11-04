@@ -1,0 +1,41 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  username    String        @unique
+  password     String
+  nodes       CommentNode[] @relation("UserNodes")
+
+}
+
+enum OperationType {
+  ADD
+  SUBTRACT
+  MULTIPLY
+  DIVIDE
+}
+
+model CommentNode {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  
+  authorId          String          @db.ObjectId
+  author            User            @relation("UserNodes", fields: [authorId], references: [id])
+
+  parentId          String?         @db.ObjectId
+  parent            CommentNode?    @relation("CommentTree", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children          CommentNode[]   @relation("CommentTree")
+
+  resultValue       Float
+
+  operationType     OperationType?
+  rightHandNumber   Float?
+
+  createdAt DateTime @default(now())
+
+}
