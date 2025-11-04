@@ -1,0 +1,41 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-atlas-local
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - 27017:27017
+    volumes:
+      - data:/data/db
+      - config:/data/configdb
+  backend:
+    environment:
+      DATABASE_URL: mongodb://user:pass@mongodb:27017/nestDB?authSource=admin&directConnection=true
+      PORT: 8000
+    build:
+      context: ./test02-backend
+      dockerfile: Dockerfile
+    container_name: nestjs-backend
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    command: ["sh", "-c", "sleep 7 && npx prisma db push && npm run start:prod"]
+
+  frontend:
+    build:
+      context: ./test02-frontend
+      dockerfile: Dockerfile
+    container_name: nextjs-frontend
+    environment:
+      NEXT_PUBLIC_BASE_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  data:
+  config:
