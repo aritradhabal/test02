@@ -1,3 +1,3 @@
-docker-compose.yml: For quickly setting up the Backend + Frontend Locally
-Backend: Nest.js
-Frontend: Next.js
+```docker-compose.yml```: For quickly setting up the Backend + Frontend Locally<br>
+```Backend```: Nest.js<br>
+```Frontend```: Next.js<br>
